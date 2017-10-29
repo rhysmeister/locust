@@ -1,11 +1,17 @@
 ---
 - hosts: all
+  become: true
 
   tasks:
 
+  - name: Ensure epel repo is available
+    yum:
+      name: epel-release
+      state: installed
+
   - name: Ensure pip is installed
     yum:
-      name: pip
+      name: python2-pip
       state: latest
 
   - name: Ensure locustio is installed
