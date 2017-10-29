@@ -30,3 +30,35 @@
       limit_type: "-"
       limit_item: nofile
       value: 10000
+
+  - name: Ensure Apache httpd is installed
+    yum:
+      name: httpd
+      state: installed
+
+  - name: Ensure Apache is running
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+
+  - name: Ensure dmeo locust file exists
+    copy:
+      content: |
+          from locust import HttpLocust, TaskSet, task
+
+          class MyTaskSet(TaskSet):
+              @task(1)
+              def index(self):
+                  self.client.get("/")
+
+          class MyLocust(HttpLocust):
+              task_set = MyTaskSet
+              min_wait = 5000
+              max_wait = 15000
+      dest: /home/vagrant/locust_demo.py
+
+  - name: Run
+    command: locust -f /home/vagrant/locust_demo.py --host=http://127.0.0.1
+    async: 600
+    poll: 30
