@@ -1,0 +1,26 @@
+---
+- hosts: all
+
+  tasks:
+
+  - name: Ensure pip is installed
+    yum:
+      name: pip
+      state: latest
+
+  - name: Ensure locustio is installed
+    pip:
+      name: locustio
+      state: latest
+
+  - name: Ensure locust user exists
+    user:
+      name: locust
+      state: present
+
+  - name: Ensure limits for locust user are set
+    pam_limits:
+      domain: locust
+      limit_type: "-"
+      limit_item: nofile
+      value: 10000
